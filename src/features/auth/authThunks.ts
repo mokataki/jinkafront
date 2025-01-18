@@ -34,10 +34,37 @@ export const login = createAsyncThunk(
             // Return user data and token to update the state
             return { user: data.user, token: data.access_token };
         } catch (error: any) {
-            console.error('Login thunk error:', error.message || error);
-            // If error occurs, reject with an appropriate error message
-            return rejectWithValue(error.message || 'Login failed');
+            console.error('Login thunk error:', error); // Log the full error object
+
+            // Log the error response structure to check if it has a message
+            if (error?.response) {
+                console.log('Error Response:', error.response);
+            }
+
+            // Check if the error is from the backend response, and extract the message
+            if (error?.response?.data?.message) {
+                const backendError = error.response.data.message;
+                console.log('Backend Error Message:', backendError); // Log the message
+
+                // Translate error messages to Persian if necessary
+                if (backendError === 'Invalid credentials') {
+                    return rejectWithValue('اطلاعات ورود اشتباه است.');
+                } else if (backendError === 'User not found') {
+                    return rejectWithValue('کاربر پیدا نشد.');
+                }
+
+                // Fallback to the backend error message
+                return rejectWithValue(backendError);
+            }
+
+            // Default fallback error message for network or other errors
+            return rejectWithValue('اطلاعات ورود اشتباه است.');
         }
     }
 );
+
+
+
+
+
 

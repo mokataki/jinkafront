@@ -1,25 +1,37 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { selectAuth } from '../features/auth/authSlice';
+import { useSelector, useDispatch } from 'react-redux';
+import { loadUser } from '../features/auth/authSlice';
+import { RootState } from '../store';
 
 interface ProtectedRouteProps {
     children: React.ReactNode;
-    role?: string; // Make the role check optional
+    roles?: string; // Allow checking roles dynamically, defaulting to optional
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role }) => {
-    const { isAuthenticated, user } = useSelector(selectAuth);
-    const location = useLocation(); // For redirecting to the location the user tried to visit
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, roles }) => {
+    const { user, isAuthenticated, isLoading } = useSelector((state: RootState) => state.auth);
+    const dispatch = useDispatch();
+    const location = useLocation();
 
-    // Redirect unauthenticated users to the login page
-    if (!isAuthenticated) {
-        return <Navigate to="/login" state={{ from: location }} />;
+    // Ensure user data is loaded on component mount
+    useEffect(() => {
+        dispatch(loadUser());
+    }, [dispatch]);
+
+    // Show loading state if data is still being loaded
+    if (isLoading ) {
+        return <div>Loading...</div>;
     }
 
-    // Check for role and redirect if the user's role doesn't match
-    if (role && user?.role !== role) {
-        return <Navigate to="/" state={{ from: location }} />;
+    // Redirect unauthenticated users to login page
+    if (!isAuthenticated) {
+        return <Navigate to="/login" state={{ from: location }} replace />;
+    }
+
+    // Redirect users without the required role
+    if (roles && user?.role !== roles) {
+        return <Navigate to="/" state={{ from: location }} replace />;
     }
 
     return <>{children}</>;

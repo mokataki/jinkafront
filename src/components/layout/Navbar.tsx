@@ -1,17 +1,32 @@
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { HiMenu, HiX } from 'react-icons/hi';
+import UserMenuDropdown from "../userMenu/userMenuDropdown.tsx";
 
 const Navbar = () => {
     const [isMenuOpen, setMenuOpen] = useState(false);
+    const navbarRef = useRef<HTMLDivElement>(null);
+
+    // Close the menu when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (navbarRef.current && !navbarRef.current.contains(event.target as Node)) {
+                setMenuOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
     return (
-        <>
-
-
-            <nav
-                className="bg-white dark:bg-gray-900 fixed w-full z-20 top-0 start-0 text-white ">
-            <div className=" container mx-auto flex justify-between items-center py-4 px-6">
+        <nav
+            ref={navbarRef}
+            className="bg-white dark:bg-gray-900 fixed w-full z-20 top-0 start-0 text-white"
+        >
+            <div className="container mx-auto flex justify-between items-center py-4 px-6">
                 {/* Logo */}
                 <div className="text-2xl font-bold tracking-wide">
                     <Link to="/">برند من</Link>
@@ -20,13 +35,19 @@ const Navbar = () => {
                 {/* Desktop Links */}
                 <ul className="hidden md:flex items-center space-x-reverse space-x-6">
                     <li>
-                        <Link to="/" className="hover:text-teal-400 transition">خانه</Link>
+                        <Link to="/" className="hover:text-teal-400 transition">
+                            خانه
+                        </Link>
                     </li>
                     <li>
-                        <Link to="/about" className="hover:text-teal-400 transition">درباره ما</Link>
+                        <Link to="/about" className="hover:text-teal-400 transition">
+                            درباره ما
+                        </Link>
                     </li>
                     <li>
-                        <Link to="/contact" className="hover:text-teal-400 transition">تماس با ما</Link>
+                        <Link to="/contact" className="hover:text-teal-400 transition">
+                            تماس با ما
+                        </Link>
                     </li>
                     <li>
                         <Link
@@ -37,6 +58,11 @@ const Navbar = () => {
                         </Link>
                     </li>
                 </ul>
+
+                {/* User Menu Dropdown */}
+                <div className="ml-4">
+                    <UserMenuDropdown />
+                </div>
 
                 {/* Mobile Menu Button */}
                 <button
@@ -89,7 +115,6 @@ const Navbar = () => {
                 </ul>
             )}
         </nav>
-            </>
     );
 };
 

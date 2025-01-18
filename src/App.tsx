@@ -1,35 +1,39 @@
-import {Suspense} from 'react';
-import { useLocation, useRoutes, Navigate } from 'react-router-dom';
-import routes from './routes'; // Import your route configuration
+import { useEffect, Suspense } from 'react';
+import {Navigate, useLocation, useRoutes} from 'react-router-dom';
+import routes from './routes'; // Import route configuration
 import Navbar from './components/layout/Navbar';
-import './index.css';
 import Header from './components/layout/Header';
 import SliderComponent from './components/SliderComponent';
 import Footer from './components/layout/Footer';
-import { useSelector } from 'react-redux';
-import { selectAuth } from './features/auth/authSlice';  // Redux selector for authentication state
-
-function AppRoutes() {
-    return useRoutes(routes);
-}
+import { useSelector, useDispatch } from 'react-redux';
+import { loadUser } from './features/auth/authSlice';
+import { RootState } from './store';
 
 function App() {
     const location = useLocation();
-    const { isAuthenticated } = useSelector(selectAuth); // Correct usage of useSelector inside a functional component
-    console.log(isAuthenticated);
-    // Check if user is trying to access login or register pages
-    const isAuthPage = location.pathname.includes('/login') || location.pathname.includes('/register');
+    const dispatch = useDispatch();
+    const {  user, isAuthenticated,isLoading } = useSelector((state: RootState) => state.auth);
 
+    // Ensure user data is loaded when the app initializes
+    useEffect(() => {
+        dispatch(loadUser()); // Dispatch action to load user from localStorage
+    }, [dispatch]);
 
-    // If user is authenticated and trying to access login or register, redirect to home
-    if (isAuthenticated && isAuthPage) {
-        return <Navigate to="/" />;
+    // Show loading screen if the app is still loading user data
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
+    console.log(user)
+    console.log(isAuthenticated)
+    if (isAuthenticated && (location.pathname === "/login" || location.pathname === "/register")) {
+        return <Navigate to="/" replace />;
     }
 
+    // Render routes
     return (
         <div>
-            {/* Conditionally render layout components based on the route */}
-            {!isAuthPage && (
+            {/* Conditionally render layout components */}
+            {!(location.pathname.includes('/login') || location.pathname.includes('/register') || location.pathname.startsWith('/admin')) && (
                 <>
                     <Header />
                     <SliderComponent />
@@ -37,13 +41,13 @@ function App() {
                 </>
             )}
 
-            {/* Content */}
+            {/* Content rendering */}
             <Suspense fallback={<div>Loading...</div>}>
-                <AppRoutes />
+                {useRoutes(routes)}
             </Suspense>
 
-            {/* Footer should also be conditionally rendered */}
-            {!isAuthPage && <Footer />}
+            {/* Footer */}
+            {!(location.pathname.includes('/login') || location.pathname.includes('/register') || location.pathname.startsWith('/admin')) && <Footer />}
         </div>
     );
 }
