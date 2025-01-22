@@ -1,10 +1,10 @@
+import CreatingTag from "../../../components/adminPanel/tags/createingTage.tsx";
 
 const CreateTag = () => {
     return (
-        <div>
-            <h1>ایجاد تگ</h1>
-            {/* Form to create a new tag */}
-        </div>
+        <>
+            <CreatingTag/>            {/* Form to create a new tag */}
+        </>
     );
 };
 

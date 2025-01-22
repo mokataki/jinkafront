@@ -25,17 +25,19 @@ const Sidebar = () => {
             {/* Sidebar Toggle Button for small screens */}
             <button
                 onClick={toggleSidebar}
-                className="fixed top-5 left-16 z-50 inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+                className="fixed top-5 left-24
+                md:left-32 md:hidden z-50 inline-flex items-center p-2 text-sm text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
             >
                 <span className="sr-only">Open sidebar</span>
                 <RiMenu2Line className="w-6 h-6" aria-hidden="true" />
             </button>
 
+
             {/* Sidebar */}
             <aside
                 className={`fixed top-20 right-0 z-40 w-64 h-[calc(100vh-5rem)] pt-4 transition-transform ${
                     isSidebarOpen ? "translate-x-0" : "translate-x-full"
-                } bg-white border-l border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700`}
+                } bg-white border-l border-gray-200 md:translate-x-0 dark:bg-gray-800 dark:border-gray-700`}
                 aria-label="Sidebar"
             >
                 <div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
@@ -69,7 +71,7 @@ const Sidebar = () => {
                                             to="/admin/products"
                                             className="flex items-center justify-between p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
                                         >
-                                            <span className="ml-3">تمامی محصولات</span>
+                                            <span className="ml-3"> محصولات</span>
                                             <FaList className="text-sm text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
                                         </Link>
                                     </li>
@@ -122,7 +124,7 @@ const Sidebar = () => {
                                             to="/admin/articles"
                                             className="flex items-center justify-between p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
                                         >
-                                            <span className="ml-3">تمامی مقالات</span>
+                                            <span className="ml-3"> مقالات</span>
                                             <FaList className="text-sm text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
                                         </Link>
                                     </li>
@@ -159,13 +161,13 @@ const Sidebar = () => {
 
                         {/* Other Sections */}
                         {[{
-                            name: "تگ‌ها", state: isTagsOpen, setState: setIsTagsOpen, path: "/admin/tags"
+                            name: "برچسب ", state: isTagsOpen, setState: setIsTagsOpen, path: "/admin/tags"
                         }, {
-                            name: "رنگ‌ها", state: isColorsOpen, setState: setIsColorsOpen, path: "/admin/colors"
+                            name: "رنگ‌", state: isColorsOpen, setState: setIsColorsOpen, path: "/admin/colors"
                         }, {
-                            name: "دسته‌بندی‌ها", state: isCategoriesOpen, setState: setIsCategoriesOpen, path: "/admin/categories"
+                            name: "دسته‌بندی‌", state: isCategoriesOpen, setState: setIsCategoriesOpen, path: "/admin/categories"
                         }, {
-                            name: "برند‌ها", state: isBrandsOpen, setState: setIsBrandsOpen, path: "/admin/brands"
+                            name: "برند‌", state: isBrandsOpen, setState: setIsBrandsOpen, path: "/admin/brands"
                         }].map((section) => (
                             <li key={section.name}>
                                 <button
@@ -184,7 +186,7 @@ const Sidebar = () => {
                                                 to={`${section.path}`}
                                                 className="flex items-center justify-between p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
                                             >
-                                                <span className="ml-3">تمامی {section.name}</span>
+                                                <span className="ml-3"> {section.name}ها </span>
                                                 <FaList className="text-sm text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
                                             </Link>
                                         </li>
@@ -193,7 +195,7 @@ const Sidebar = () => {
                                                 to={`${section.path}/create`}
                                                 className="flex items-center justify-between p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
                                             >
-                                                <span className="ml-3">ایجاد {section.name}</span>
+                                                <span className="ml-3">ایجاد {section.name}جدید</span>
                                                 <FaPlus className="text-sm text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" />
                                             </Link>
                                         </li>

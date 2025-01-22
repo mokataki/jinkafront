@@ -1,23 +1,27 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { persistReducer, persistStore } from 'redux-persist';
-import storage from 'redux-persist/lib/storage'; // default storage (localStorage)
-import authReducer from '../features/auth/authSlice'; // Default import
+import storage from 'redux-persist/lib/storage'; // Default storage (localStorage)
+import authReducer from '../features/auth/authSlice'; // Import auth slice reducer
+import tagReducer from '../features/tags/tagSlice'; // Import tag slice reducer
 
-// Persist configuration
+// Persist configuration for auth and tags (or any other slices you want to persist)
 const persistConfig = {
     key: 'root',       // Key for root persist store
     storage,           // Using localStorage to persist the state
-    whitelist: ['auth'], // Only persist the auth slice (you can add more slices to this array)
+    whitelist: ['auth', 'tags'], // Persist auth and tags slices
 };
 
-const persistedReducer = persistReducer(persistConfig, authReducer);
+// Persisted reducers for auth and tags
+const persistedAuthReducer = persistReducer(persistConfig, authReducer);
+const persistedTagReducer = persistReducer(persistConfig, tagReducer);
 
-// Create the Redux store with persisted reducer
+// Create the Redux store with persisted reducers
 const store = configureStore({
     reducer: {
-        auth: persistedReducer,  // Using the persisted reducer for the auth slice
+        auth: persistedAuthReducer,  // Persisted reducer for auth
+        tags: persistedTagReducer,   // Persisted reducer for tags
     },
-    // optional middleware for redux-persist
+    // Optional middleware for redux-persist
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
             serializableCheck: {
@@ -31,4 +35,4 @@ const persistor = persistStore(store);
 
 export { store, persistor };
 export type AppDispatch = typeof store.dispatch; // This defines the correct type for dispatch
-export type RootState = ReturnType<typeof store.getState>;
+export type RootState = ReturnType<typeof store.getState>; // This defines the correct type for root state

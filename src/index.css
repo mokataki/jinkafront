@@ -1,3 +1,51 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Font declarations for locally hosted fonts */
+@font-face {
+    font-family: 'Vazir';
+    src: url('./fonts/vazir.woff2') format('woff2'),
+    url('./fonts/vazir.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Yekan';
+    src: url('./fonts/Yekan.woff') format('woff2'),
+    url('./fonts/Yekan.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Tanha';
+    src: url('./fonts/Tanha.woff2') format('woff2'),
+    url('./fonts/Tanha.woff2') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Shabnam';
+    src: url('./fonts/Shabnam.woff2') format('woff2'),
+    url('./fonts/Shabnam.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'IRANSans';
+    src: url('./fonts/IRANSans-web.woff') format('woff2'),
+    url('./fonts/IRANSans-web.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Parastoo';
+    src: url('./fonts/Parastoo.woff2') format('woff2'),
+    url('./fonts/Parastoo.woff2') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
