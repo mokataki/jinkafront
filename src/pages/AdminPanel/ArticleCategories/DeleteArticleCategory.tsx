@@ -1,48 +1,53 @@
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../../../store';
-import {deleteBrand, fetchBrands} from "../../../features/brands/brandThunks.ts";
+import {deleteArticleCategory, fetchArticleCategories} from "../../../features/categories/articleCategoryThunks.ts";
 
-const DeleteBrand = () => {
+const DeleteArticleCategory = () => {
     const dispatch = useDispatch<AppDispatch>();
 
-    const brands = useSelector((state: RootState) => state.brands.brands);
-    const brandsLoading = useSelector((state: RootState) => state.brands.status === 'loading');
-    const error = useSelector((state: RootState) => state.brands.error);
+    const categories = useSelector((state: RootState) => state.categories.categories);
+    const categoriesLoading = useSelector((state: RootState) => state.categories.status === 'loading');
+    const error = useSelector((state: RootState) => state.categories.error);
 
     const [searchQuery, setSearchQuery] = useState('');
-    const [brandToDelete, setBrandToDelete] = useState<typeof brands[0] | null>(null);
+    const [categoryToDelete, setCategoryToDelete] = useState<typeof categories[0] | null>(null);
     const [notification, setNotification] = useState<string | null>(null);
 
     useEffect(() => {
-        dispatch(fetchBrands({ fetchAll: true }));
+        dispatch(fetchArticleCategories({ fetchAll: true }));
     }, [dispatch]);
 
     const handleDeleteConfirm = async () => {
-        if (!brandToDelete) return;
+        if (!categoryToDelete) return;
 
         try {
-            await dispatch(deleteBrand(brandToDelete.id)).unwrap();
-            setNotification('برچسب با موفقیت حذف شد!');
-            setTimeout(() => setNotification(null), 5000);
-            setBrandToDelete(null);
-            dispatch(fetchBrands({fetchAll:true})); // Fetch the brands, assume `fetchBrands` exists
+            await dispatch(deleteArticleCategory(categoryToDelete.id)).unwrap();
+            setNotification('دسته‌بندی با موفقیت حذف شد!');
+            dispatch(fetchArticleCategories({ fetchAll: true }));
 
-        } catch (err) {
-            console.error('Failed to delete tag:', err);
-            setNotification('خطایی در حذف برچسب رخ داد.');
+            setTimeout(() => setNotification(null), 5000);
+            setCategoryToDelete(null);
+        } catch (err: any) {
+            const errorMessage =
+                err?.message ||
+                "خطایی در حذف دسته‌بندی رخ داد. لطفاً مجدداً تلاش کنید.";
+
+            setNotification(errorMessage);
             setTimeout(() => setNotification(null), 5000);
         }
     };
 
-    const filteredBrands = brands.filter((brand) =>
-        brand.brandName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        brand.slug.toLowerCase().includes(searchQuery.toLowerCase())
+
+
+    const filteredCategories = categories.filter((category) =>
+        category.categoryName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        category.categoryDescription?.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     return (
         <div className="p-6 bg-gray-50 rtl relative">
-            <h1 className="text-lg font-bold mb-4 text-white font-dana">برچسب‌ها</h1>
+            <h1 className="text-lg font-bold mb-4 text-white font-dana">دسته‌بندی‌ها</h1>
 
             {/* Search Box */}
             <div className="mb-6">
@@ -55,25 +60,33 @@ const DeleteBrand = () => {
                 />
             </div>
 
-            {brandsLoading && <p className="text-center text-blue-500">در حال بارگذاری...</p>}
+            {categoriesLoading && <p className="text-center text-blue-500">در حال بارگذاری...</p>}
             {error && <p className="text-center text-red-500">{error}</p>}
 
-            {!brandsLoading && !error && (
+            {!categoriesLoading && !error && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    {filteredBrands.length > 0 ? (
-                        filteredBrands.map((brand) => (
+                    {filteredCategories.length > 0 ? (
+                        filteredCategories.map((category) => (
                             <div
-                                key={brand.id}
+                                key={category.id}
                                 className="p-4 bg-white border rounded-lg shadow-lg cursor-pointer hover:bg-indigo-50 hover:shadow-xl transition-all duration-300 transform hover:scale-105 relative"
                             >
-                                <h2 className="text-xl font-semibold text-indigo-600 mb-2">{brand.brandName}</h2>
-                                <p className="text-gray-600 font-vazir"><strong>نام:</strong> {brand.brandName}</p>
-                                <p className="text-gray-600 font-vazir"><strong>اسلاگ:</strong> {brand.slug}</p>
-                                <p className="text-gray-600 font-vazir"><strong>متا عنوان:</strong> {brand.brandName || 'N/A'}</p>
+                                <h2 className="text-xl font-semibold text-indigo-600 mb-2">{category.categoryName}</h2>
+                                <p className="text-gray-600 font-vazir"><strong>نام:</strong> {category.categoryName}</p>
+                                <p className="text-gray-600 font-vazir"><strong>توضیحات:</strong> {category.categoryDescription || 'N/A'}</p>
+                                {category.children && category.children.length > 0 ? (
+                                    <p className="text-gray-600 font-vazir">
+                                        <strong>برچسب والد:</strong> {category.children[0].categoryName || 'N/A'}
+                                    </p>
+                                ) : (
+                                    <p className="text-gray-600 font-vazir">
+                                        <strong>برچسب والد:</strong> {category.id ? 'No Parent Data' : 'N/A'}
+                                    </p>
+                                )}
 
                                 <div className="mt-4 flex justify-end">
                                     <button
-                                        onClick={() => setBrandToDelete(brand)}
+                                        onClick={() => setCategoryToDelete(category)}
                                         className="px-4 py-2 bg-red-500 text-white rounded-lg shadow hover:bg-red-600"
                                     >
                                         حذف
@@ -82,19 +95,19 @@ const DeleteBrand = () => {
                             </div>
                         ))
                     ) : (
-                        <p className="text-center text-gray-600">هیچ برچسبی با این شرایط یافت نشد.</p>
+                        <p className="text-center text-gray-600">هیچ دسته‌بندی‌ای با این شرایط یافت نشد.</p>
                     )}
                 </div>
             )}
 
             {/* Delete Confirmation Form */}
-            {brandToDelete && (
+            {categoryToDelete && (
                 <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white p-8 rounded-lg shadow-lg w-11/12 md:w-1/3">
                         <h2 className="text-xl font-semibold font-shabnam text-gray-800 mb-6">از حذف مطمئن هستید؟</h2>
                         <div className="flex justify-end gap-4">
                             <button
-                                onClick={() => setBrandToDelete(null)}
+                                onClick={() => setCategoryToDelete(null)}
                                 className="px-6 py-3 bg-gray-300 text-gray-800 font-semibold rounded-lg shadow hover:bg-gray-400"
                             >
                                 لغو
@@ -114,9 +127,9 @@ const DeleteBrand = () => {
             {notification && (
                 <div
                     className={`fixed top-4 left-1/2 transform -translate-x-1/2 
-                    ${notification.includes("به‌روزرسانی") ? "bg-blue-400" : "bg-red-500"} 
-                    text-white px-10 py-5 rounded-lg shadow-lg z-50 opacity-0 transition-opacity duration-1000 ease-out
-                    ${notification ? "opacity-100" : "opacity-0"} font-yekan`}
+      ${notification.includes("به‌روزرسانی") ? "bg-blue-400" : "bg-red-500"} 
+      text-white px-10 py-5 rounded-lg shadow-lg z-50 opacity-0 transition-opacity duration-1000 ease-out
+      ${notification ? "opacity-100" : "opacity-0"} font-yekan`}
                 >
                     {notification}
                 </div>
@@ -126,4 +139,5 @@ const DeleteBrand = () => {
     );
 };
 
-export default DeleteBrand;
+export default DeleteArticleCategory;
+

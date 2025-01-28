@@ -8,6 +8,7 @@ import Footer from './components/layout/Footer';
 import { useSelector, useDispatch } from 'react-redux';
 import { loadUser } from './features/auth/authSlice';
 import { RootState } from './store';
+import ErrorBoundary from "./components/ErrorBoundary.tsx";
 
 function App() {
     const location = useLocation();
@@ -31,6 +32,8 @@ function App() {
 
     // Render routes
     return (
+        <ErrorBoundary>
+
         <div>
             {/* Conditionally render layout components */}
             {!(location.pathname.includes('/login') || location.pathname.includes('/register') || location.pathname.startsWith('/admin')) && (
@@ -49,6 +52,8 @@ function App() {
             {/* Footer */}
             {!(location.pathname.includes('/login') || location.pathname.includes('/register') || location.pathname.startsWith('/admin')) && <Footer />}
         </div>
+        </ErrorBoundary>
+
     );
 }
 

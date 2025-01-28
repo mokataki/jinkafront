@@ -27,6 +27,10 @@ import ListArticles from "../pages/AdminPanel/Articles/ListArticles.tsx";
 import DeleteArticle from "../pages/AdminPanel/Articles/DeleteArticle.tsx";
 import EditArticle from "../pages/AdminPanel/Articles/EditArticle.tsx";
 import CreateArticle from "../pages/AdminPanel/Articles/CreateArticle.tsx";
+import ListArticleCategories from "../pages/AdminPanel/ArticleCategories/ListArticleCategories.tsx";
+import CreateArticleCategory from "../pages/AdminPanel/ArticleCategories/CreateArticleCategory.tsx";
+import EditArticleCategory from "../pages/AdminPanel/ArticleCategories/EditArticleCategory.tsx";
+import DeleteArticleCategory from "../pages/AdminPanel/ArticleCategories/DeleteArticleCategory.tsx";
 
 // Lazy load components
 const Home = lazy(() => import('../pages/Home'));
@@ -71,6 +75,11 @@ const routes: RouteObject[] = [
             { path: 'articles/create', element: <CreateArticle /> },
             { path: 'articles/edit', element: <EditArticle /> },
             { path: 'articles/delete', element: <DeleteArticle /> },
+
+            { path: 'articles-category', element: <ListArticleCategories /> },
+            { path: 'articles-category/create', element: <CreateArticleCategory /> },
+            { path: 'articles-category/edit', element: <EditArticleCategory /> },
+            { path: 'articles-category/delete', element: <DeleteArticleCategory /> },
 
             // Tags Routes
             { path: 'tags', element: <ListTags /> },

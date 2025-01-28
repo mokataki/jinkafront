@@ -1,45 +1,42 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchTags, updateTag } from '../../../features/tags/tagThunks';
 import { RootState, AppDispatch } from '../../../store';
+import {fetchArticleCategories, updateArticleCategory} from "../../../features/categories/articleCategoryThunks.ts";
 
-const EditTag = () => {
+const EditArticleCategory = () => {
     const dispatch = useDispatch<AppDispatch>();
 
-    const tags = useSelector((state: RootState) => state.tags.tags);
-    const tagsLoading = useSelector((state: RootState) => state.tags.status === 'loading');
-    const error = useSelector((state: RootState) => state.tags.error);
+    const categories = useSelector((state: RootState) => state.categories.categories);
+    const categoriesLoading = useSelector((state: RootState) => state.categories.status === 'loading');
+    const error = useSelector((state: RootState) => state.categories.error);
 
-    const [selectedTag, setSelectedTag] = useState<typeof tags[0] | null>(null);
+    const [selectedCategory, setSelectedCategory] = useState<typeof categories[0] | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
-    const [formData, setFormData] = useState<Partial<typeof tags[0]>>({
-        name: '',
-        metaTitle: '',
-        metaDescription: '',
+    const [formData, setFormData] = useState<Partial<typeof categories[0]>>({
+        categoryName: '',
+        categoryDescription: '',
         parentId: undefined,
     });
-    const [notification, setNotification] = useState<string | null>(null); // For animation alarm
+    const [notification, setNotification] = useState<string | null>(null); // For notification
 
     useEffect(() => {
-        dispatch(fetchTags({ fetchAll: true }));
+        dispatch(fetchArticleCategories({ fetchAll: true }));
     }, [dispatch]);
 
-    const handleTagClick = useCallback((tag: typeof tags[0]) => {
-        setSelectedTag(tag);
+    const handleCategoryClick = useCallback((category: typeof categories[0]) => {
+        setSelectedCategory(category);
         setFormData({
-            name: tag.name,
-            metaTitle: tag.metaTitle || '',
-            metaDescription: tag.metaDescription || '',
-            parentId: tag.parentId,
+            categoryName: category.categoryName,
+            categoryDescription: category.categoryDescription || '',
+            parentId: category.parentId,
         });
     }, []);
 
     const closeForm = useCallback(() => {
-        setSelectedTag(null);
+        setSelectedCategory(null);
         setFormData({
-            name: '',
-            metaTitle: '',
-            metaDescription: '',
+            categoryName: '',
+            categoryDescription: '',
             parentId: undefined,
         });
     }, []);
@@ -53,11 +50,11 @@ const EditTag = () => {
     );
 
     const handleUpdate = async () => {
-        if (!selectedTag) return;
+        if (!selectedCategory) return;
 
         try {
-            const updatedTag: any = {
-                id: selectedTag.id,
+            const updatedArticleCategory: any = {
+                id: selectedCategory.id,
                 ...formData,
             };
 
@@ -69,34 +66,32 @@ const EditTag = () => {
             }
 
             if (parentIdInt && !isNaN(parentIdInt)) {
-                updatedTag.parentId = parentIdInt;
+                updatedArticleCategory.parentId = parentIdInt;
             } else {
-                delete updatedTag.parentId;
+                delete updatedArticleCategory.parentId;
             }
 
-            await dispatch(updateTag(updatedTag)).unwrap();
-            setNotification('برچسب با موفقیت به ‌روزرسانی شد!');
-            dispatch(fetchTags({ fetchAll: true }));
+            await dispatch(updateArticleCategory(updatedArticleCategory)).unwrap();
+            setNotification('دسته‌بندی با موفقیت به ‌روزرسانی شد!');
+            dispatch(fetchArticleCategories({ fetchAll: true }));
 
             closeForm();
             setTimeout(() => setNotification(null), 5000);
         } catch (err: any) {
-            console.error('Failed to update tag:', err);
-            setNotification('خطایی در به‌ روزرسانی برچسب رخ داد.');
+            console.error('Failed to update category:', err);
+            setNotification('خطایی در به‌ روزرسانی دسته‌بندی رخ داد.');
             setTimeout(() => setNotification(null), 5000);
         }
     };
 
-    const filteredTags = tags.filter((tag) =>
-        tag.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        tag.slug.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (tag.metaTitle && tag.metaTitle.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (tag.metaDescription && tag.metaDescription.toLowerCase().includes(searchQuery.toLowerCase()))
+    const filteredCategories = categories.filter((category) =>
+        category.categoryName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        category.categoryDescription?.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     return (
         <div className="p-6 bg-gray-50 rtl relative">
-            <h1 className="text-lg font-bold mb-4 text-white font-dana">برچسب‌ها</h1>
+            <h1 className="text-lg font-bold mb-4 text-white font-dana">دسته‌بندی‌ها</h1>
 
             <div className="mb-6">
                 <input
@@ -108,74 +103,63 @@ const EditTag = () => {
                 />
             </div>
 
-            {tagsLoading && <p className="text-center text-blue-500 font-shabnam">در حال بارگذاری...</p>}
+            {categoriesLoading && <p className="text-center text-blue-500 font-shabnam">در حال بارگذاری...</p>}
             {error && <p className="text-center text-red-500 font-parasto">{error}</p>}
 
-            {!tagsLoading && !error && (
+            {!categoriesLoading && !error && (
                 <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {filteredTags.length > 0 ? (
-                        filteredTags.map((tag) => (
+                    {filteredCategories.length > 0 ? (
+                        filteredCategories.map((category) => (
                             <div
-                                key={tag.id}
+                                key={category.id}
                                 className="p-4 bg-white border rounded-lg shadow-lg cursor-pointer hover:bg-indigo-50 hover:shadow-xl transition-all duration-300 transform hover:scale-105"
-                                onClick={() => handleTagClick(tag)}
+                                onClick={() => handleCategoryClick(category)}
                             >
-                                <h2 className="text-xl font-semibold text-indigo-600 mb-2 font-tanha">{tag.name}</h2>
-                                <p className="text-gray-600 font-vazir"><strong>نام:</strong> {tag.name}</p>
-                                <p className="text-gray-600 font-vazir"><strong>اسلاگ:</strong> {tag.slug}</p>
-                                <p className="text-gray-600 font-vazir"><strong>متا عنوان:</strong> {tag.metaTitle || 'N/A'}</p>
-                                <p className="text-gray-600 font-vazir"><strong>متا توضیحات:</strong> {tag.metaDescription || 'N/A'}</p>
-                                {tag.parentId ? (
+                                <h2 className="text-xl font-semibold text-indigo-600 mb-2 font-tanha">{category.categoryName}</h2>
+                                <p className="text-gray-600 font-vazir"><strong>نام:</strong> {category.categoryName}</p>
+                                <p className="text-gray-600 font-vazir"><strong>توضیحات:</strong> {category.categoryDescription || 'N/A'}</p>
+                                {category.parentId ? (
                                     <p className="text-gray-600 font-vazir">
-                                        <strong>برچسب والد:</strong> {tag.parentId ? tag.name : 'N/A'}
+                                        <strong>دسته‌بندی والد:</strong> {category.parentId ? category.categoryName : 'N/A'}
                                     </p>
                                 ) : (
                                     <p className="text-gray-600 font-vazir">
-                                        <strong>برچسب والد:</strong> {tag.parentId ? 'No Parent Data' : 'N/A'}
+                                        <strong>دسته‌بندی والد:</strong> {category.parentId ? 'No Parent Data' : 'N/A'}
                                     </p>
                                 )}
                             </div>
                         ))
                     ) : (
-                        <p className="text-center text-gray-600 font-vazir">هیچ برچسبی با این شرایط یافت نشد.</p>
+                        <p className="text-center text-gray-600 font-vazir">هیچ دسته‌بندی‌ای با این شرایط یافت نشد.</p>
                     )}
                 </div>
             )}
 
-            {selectedTag && (
+            {selectedCategory && (
                 <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white p-8 rounded-lg shadow-lg w-11/12 md:w-1/3 transform transition-all duration-500">
-                        <h2 className="text-2xl font-semibold text-indigo-600 mb-4 font-tanha">ویرایش {selectedTag.name}</h2>
+                        <h2 className="text-2xl font-semibold text-indigo-600 mb-4 font-tanha">ویرایش {selectedCategory.categoryName}</h2>
                         <div className="space-y-4">
                             <div>
                                 <label className="block text-gray-600 font-vazir">نام</label>
                                 <input
-                                    name="name"
-                                    value={formData.name || ''}
+                                    name="categoryName"
+                                    value={formData.categoryName || ''}
                                     onChange={handleInputChange}
                                     className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 shadow-md transition-all duration-200 font-yekan"
                                 />
                             </div>
                             <div>
-                                <label className="block text-gray-600 font-vazir">متا عنوان</label>
-                                <input
-                                    name="metaTitle"
-                                    value={formData.metaTitle || ''}
-                                    onChange={handleInputChange}
-                                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 shadow-md transition-all duration-200 font-yekan"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-gray-600 font-vazir">متا توضیحات</label>
+                                <label className="block text-gray-600 font-vazir">توضیحات</label>
                                 <textarea
-                                    name="metaDescription"
-                                    value={formData.metaDescription || ''}
+                                    name="categoryDescription"
+                                    value={formData.categoryDescription || ''}
                                     onChange={handleInputChange}
                                     className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 shadow-md transition-all duration-200 font-yekan"
                                 />
                             </div>
                             <div>
-                                <label className="block text-gray-600 font-vazir">برچسب والد</label>
+                                <label className="block text-gray-600 font-vazir">دسته‌بندی والد</label>
                                 <select
                                     name="parentId"
                                     value={formData.parentId || ''}
@@ -183,9 +167,9 @@ const EditTag = () => {
                                     className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 shadow-md transition-all duration-200 font-yekan"
                                 >
                                     <option value="">بدون والد</option>
-                                    {tags.map((tag) => (
-                                        <option key={tag.id} value={tag.id}>
-                                            {tag.name}
+                                    {categories.map((category) => (
+                                        <option key={category.id} value={category.id}>
+                                            {category.categoryName}
                                         </option>
                                     ))}
                                 </select>
@@ -224,4 +208,5 @@ const EditTag = () => {
     );
 };
 
-export default EditTag;
+export default EditArticleCategory;
+

@@ -24,8 +24,11 @@ const DeleteTag = () => {
         try {
             await dispatch(deleteTag(tagToDelete.id)).unwrap();
             setNotification('برچسب با موفقیت حذف شد!');
+            dispatch(fetchTags({ fetchAll: true }));
+
             setTimeout(() => setNotification(null), 5000);
             setTagToDelete(null);
+
         } catch (err) {
             console.error('Failed to delete tag:', err);
             setNotification('خطایی در حذف برچسب رخ داد.');

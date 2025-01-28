@@ -10,6 +10,8 @@ const Sidebar = () => {
     const [isTagsOpen, setIsTagsOpen] = useState(false);
     const [isColorsOpen, setIsColorsOpen] = useState(false);
     const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
+    const [isArticleCategoriesOpen, setIsArticleCategoriesOpen] = useState(false);
+
     const [isBrandsOpen, setIsBrandsOpen] = useState(false);
 
     const toggleSidebar = () => {
@@ -165,7 +167,10 @@ const Sidebar = () => {
                         }, {
                             name: "رنگ‌", state: isColorsOpen, setState: setIsColorsOpen, path: "/admin/colors"
                         }, {
-                            name: "دسته‌بندی‌", state: isCategoriesOpen, setState: setIsCategoriesOpen, path: "/admin/categories"
+                            name: "دسته‌بندی‌ مقاله ", state: isArticleCategoriesOpen, setState: setIsArticleCategoriesOpen, path: "/admin/articles-category"
+
+                        }, {
+                            name: "دسته‌بندی‌ محصول", state: isCategoriesOpen, setState: setIsCategoriesOpen, path: "/admin/categories"
                         }, {
                             name: "برند‌", state: isBrandsOpen, setState: setIsBrandsOpen, path: "/admin/brands"
                         }].map((section) => (

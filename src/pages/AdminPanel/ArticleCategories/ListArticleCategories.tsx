@@ -1,9 +1,10 @@
+
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchCategories } from '../../../features/categories/categoryThunks';
 import { RootState, AppDispatch } from '../../../store';
+import {fetchArticleCategories} from "../../../features/categories/articleCategoryThunks.ts";
 
-const ListCategories = () => {
+const ListArticleCategories = () => {
     const dispatch = useDispatch<AppDispatch>();
 
     // Selectors for categories, loading, and error
@@ -15,11 +16,11 @@ const ListCategories = () => {
     const [searchQuery, setSearchQuery] = useState<string>(''); // State for search query
 
     useEffect(() => {
-        dispatch(fetchCategories({ fetchAll: true }));
+        dispatch(fetchArticleCategories({ fetchAll: true }));
     }, [dispatch]);
 
-    const handleCategoryClick = (category: typeof categories[0]) => {
-        setSelectedCategory(category);
+    const handleCategoryClick = (articleCategory: typeof categories[0]) => {
+        setSelectedCategory(articleCategory);
     };
 
     const closeForm = () => {
@@ -138,4 +139,4 @@ const ListCategories = () => {
     );
 };
 
-export default ListCategories;
+export default ListArticleCategories;
